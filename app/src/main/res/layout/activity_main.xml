@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".MainActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:translationZ="12dp"
+        android:background="@android:color/white"
+        android:layout_marginRight="15dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="15dp">
+
+        <androidx.appcompat.widget.AppCompatAutoCompleteTextView
+            android:id="@+id/autoCompleteTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:hint="Search..."/>
+
+    </LinearLayout>
+
+    <com.mapbox.mapboxsdk.maps.MapView
+        android:id="@+id/mapView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/colorPrimary"
+        />
+
+
+    <LinearLayout
+        android:id="@+id/motionDNAControlUIPanel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_gravity="left|bottom"
+        android:translationZ="13dp"
+        android:visibility="visible"
+        android:layout_marginLeft="15dp"
+        android:layout_marginBottom="15dp">
+
+        <LinearLayout
+            android:id="@+id/remoteControlUIPanel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/addCommentBtn"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                app:backgroundTint="@android:color/white"
+                android:src="@drawable/icons_add_comment"
+                android:visibility="visible"
+                android:clickable="true"
+                android:layout_marginBottom="10dp"
+                app:fabCustomSize="44dp"
+                app:maxImageSize="35dp"
+                />
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/intervalBtn"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                app:backgroundTint="@android:color/white"
+                android:src="@drawable/icons_stopwatch_1s"
+                android:visibility="visible"
+                android:clickable="true"
+                android:layout_marginBottom="20dp"
+                app:fabCustomSize="44dp"
+                app:maxImageSize="35dp"
+                />
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/recordTrackBtn"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                app:backgroundTint="@android:color/white"
+                android:src="@drawable/track_recording_selector"
+                android:visibility="visible"
+                android:clickable="true"
+                android:layout_marginBottom="10dp"
+                app:fabCustomSize="44dp"
+                app:maxImageSize="35dp"
+                />
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/pauseTrackBtn"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                app:backgroundTint="@android:color/white"
+                android:src="@drawable/track_pause_selector"
+                android:visibility="visible"
+                android:clickable="true"
+                android:layout_marginBottom="10dp"
+                app:fabCustomSize="44dp"
+                app:maxImageSize="35dp"
+                />
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/stopTrackBtn"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                app:backgroundTint="@android:color/white"
+                android:src="@drawable/icons_stop"
+                android:visibility="visible"
+                android:clickable="true"
+                android:layout_marginBottom="20dp"
+                app:fabCustomSize="44dp"
+                app:maxImageSize="35dp"
+                />
+
+        </LinearLayout>
+
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/controlBtn"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            app:backgroundTint="@android:color/white"
+            android:src="@drawable/motiondna_control_selector"
+            android:visibility="visible"
+            android:clickable="true"
+            android:layout_marginBottom="10dp"
+            app:fabCustomSize="44dp"
+            app:maxImageSize="35dp"
+            />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/uploadBtn"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            app:backgroundTint="@android:color/white"
+            android:src="@drawable/icons_upload"
+            android:visibility="visible"
+            android:clickable="true"
+            android:layout_marginBottom="10dp"
+            app:fabCustomSize="44dp"
+            app:maxImageSize="30dp"
+            />
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:id="@+id/locationPanel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_gravity="right|bottom"
+        android:translationZ="13dp"
+        android:visibility="visible"
+        android:layout_marginRight="15dp"
+        android:layout_marginBottom="15dp">
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fixLocationBtn"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            app:backgroundTint="@android:color/white"
+            android:src="@drawable/icons_location_calibrate_selector"
+            android:visibility="visible"
+            android:clickable="true"
+            android:layout_marginBottom="10dp"
+            app:fabCustomSize="44dp"
+            app:maxImageSize="36dp"
+            />
+
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/currentLocationBtn"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            app:backgroundTint="@android:color/white"
+            android:src="@drawable/current_location_selector"
+            android:visibility="visible"
+            android:clickable="true"
+            android:layout_marginBottom="10dp"
+            app:fabCustomSize="44dp"
+            app:maxImageSize="40dp"
+            />
+
+    </LinearLayout>
+
+    <!--
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_gravity="right|bottom"
+        android:translationZ="13dp"
+        android:visibility="visible"
+        android:layout_marginRight="15dp"
+        android:layout_marginBottom="15dp">
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/themeSymbolBtn"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            app:backgroundTint="@android:color/white"
+            android:src="@drawable/mk_thm_hawkercentre"
+            android:visibility="visible"
+            android:clickable="true"
+            android:layout_marginBottom="10dp"
+            app:fabCustomSize="44dp"
+            app:maxImageSize="50dp"
+            />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/themePolylineBtn"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            app:backgroundTint="@android:color/white"
+            android:src="@drawable/mk_thm_park_connector_loop"
+            android:visibility="visible"
+            android:clickable="true"
+            android:layout_marginBottom="10dp"
+            app:fabCustomSize="44dp"
+            app:maxImageSize="50dp"
+            />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/themePolygonBtn"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            app:backgroundTint="@android:color/white"
+            android:src="@drawable/mk_thm_dengue_cluster"
+            android:visibility="visible"
+            android:clickable="true"
+            android:layout_marginBottom="10dp"
+            app:fabCustomSize="44dp"
+            app:maxImageSize="50dp"
+            />
+
+    </LinearLayout>
+    -->
+
+</FrameLayout>
