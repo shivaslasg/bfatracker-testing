@@ -63,6 +63,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback,
     var intervalBtn : FloatingActionButton? = null
 
     var latestChosenLocation : LatLng? = null
+    var latestBearing : Float? = null
 
     private var permissionsManager: PermissionsManager = PermissionsManager(this)
 
@@ -87,9 +88,9 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback,
 
         autoCompleteTextView?.onItemClickListener = AdapterView.OnItemClickListener {
                 parent,_view,position,_id->
-            var addressItem: Address = parent.getItemAtPosition(position) as Address
+            val addressItem: Address = parent.getItemAtPosition(position) as Address
             autoCompleteTextView?.setText(addressItem.BUILDING, false)
-            autoCompleteTextView?.setSelection(addressItem.BUILDING?.length!!);
+            autoCompleteTextView?.setSelection(addressItem.BUILDING?.length!!)
             mapUtility?.drawSearchMarker((addressItem))
             mapUtility?.zoomCameraToLocation(addressItem.LATITUDE?.toDouble()!!, addressItem.LONGITUDE?.toDouble()!!, 17.0)
             latestChosenLocation = LatLng(addressItem.LATITUDE?.toDouble()!!, addressItem.LONGITUDE?.toDouble()!!)
@@ -97,11 +98,12 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback,
             //undo the GPS option
             if(currentLocationBtn!!.isSelected){
                 currentLocationBtn!!.isSelected = false
+                latestBearing = null
             }
         }
 
         if(utility != null){
-            if(utility!!?.checkTokenExpiryDate()){
+            if(utility!!.checkTokenExpiryDate()){
                 webUtility?.fetchToken()
             }
         }
@@ -152,7 +154,12 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback,
                 mapUtility?.drawMapPinSymbolForMotionDNA(latestChosenLocation!!)
             } else {
                 if (latestChosenLocation != null) {
-                    motionDnaController.fixMotionDnaLocation(latestChosenLocation!!)
+                    if(latestBearing != null) {
+                        motionDnaController.fixMotionDnaLocationWithBearing(latestChosenLocation!!, latestBearing!!)
+                    } else {
+                        motionDnaController.fixMotionDnaLocation(latestChosenLocation!!)
+                    }
+
                     fixLocationBtn!!.isSelected = true
                     controlBtn?.isEnabled = true
                     controlBtn?.drawable?.alpha = 225
@@ -507,6 +514,9 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback,
         latestChosenLocation = LatLng(latestLocation.latitude, latestLocation.longitude)
         mapUtility?.addMarkerToMap("","", latestLocation.latitude, latestLocation.longitude)
         mapUtility?.zoomCameraToLocation(latestLocation.latitude, latestLocation.longitude, 19.0)
+        val bearingInDegrees : Float? = locationUtility?.getBearings()
+        latestBearing = bearingInDegrees
+        Toast.makeText(this, "Bearings in degree: "+bearingInDegrees, Toast.LENGTH_SHORT).show()
         locationUtility?.removeLocationUpdates()
     }
 

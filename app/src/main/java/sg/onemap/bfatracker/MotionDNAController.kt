@@ -47,6 +47,8 @@ class MotionDNAController(var activity: MainActivity,
         motionDnaApplication!!.setCallbackUpdateRateInMs(selectedinterval)
         motionDnaApplication!!.setBackpropagationEnabled(true)
         motionDnaApplication!!.setBackpropagationBufferSize(2000)
+
+        motionDnaApplication!!.runMotionDna(motiondnaid)
     }
 
     fun fixMotionDnaLocation(location: LatLng){
@@ -61,9 +63,18 @@ class MotionDNAController(var activity: MainActivity,
         }
     }
 
+    fun fixMotionDnaLocationWithBearing(location: LatLng, bearings: Float){
+        try {
+            motionDnaApplication!!.setLocationLatitudeLongitudeAndHeadingInDegrees(location.latitude, location.longitude, bearings.toDouble())
+            Toast.makeText(activity, "Fixing location @ latitude : "+location.latitude+", longitude: "+location.longitude+", with bearings (in degrees) :"+bearings, Toast.LENGTH_SHORT).show()
+        } catch (ex : Exception) {
+            Log.e(TAG, ex.toString())
+        }
+    }
+
     fun startMotionDna(){
         try {
-            motionDnaApplication!!.runMotionDna(motiondnaid)
+            //motionDnaApplication!!.runMotionDna(motiondnaid)
             CURRENT_MOTIONDNA = RECORDING_MOTIONDNA
             Log.i(TAG, "startMotionDna")
         } catch (ex : Exception) {
@@ -111,14 +122,13 @@ class MotionDNAController(var activity: MainActivity,
     }
 
     override fun receiveMotionDna(motionDna: MotionDna) {
-        var str = "**********Navisens MotionDna Location Data***********\n"
-        val location:MotionDna.Location = motionDna.location
+        //val str = "**********Navisens MotionDna Location Data***********\n"
+        /*val location:MotionDna.Location = motionDna.location
         var lat:Double = location.globalLocation.latitude
         var lng:Double = location.globalLocation.longitude
 
         str += "lat: " + lat + " \n"
-        str += "lng: " + lng + " \n"
-
+        str += "lng: " + lng + " \n"*/
 
         //str += "Lat from getLocation().globallocation : " + motionDna.getLocation().globalLocation.latitude + " Lon from getLocation().longitude: " + motionDna.getLocation().globalLocation.longitude + "\n";
         //str += "Lat from getLocation().globallocation : " + motionDna.getLocation().globalLocation.latitude + " Lon from getLocation().longitude: " + motionDna.getLocation().globalLocation.longitude + "\n";
@@ -163,18 +173,31 @@ class MotionDNAController(var activity: MainActivity,
         //str += "motionType: " + motionDna.getMotion().motionType + "\n"
         //str += "Lat from getGpsLocation().globallocation : " + motionDna.gpsLocation.globalLocation.latitude + "\n "
         //str += "Lon from getGpsLocation().longitude: " + motionDna.gpsLocation.globalLocation.longitude + "\n"
-        Log.i(TAG, str)
-        //motionDna.location.globalLocation.latitude
-        var drawLatLng:LatLng = LatLng(motionDna.location.globalLocation.latitude, motionDna.location.globalLocation.longitude)
 
-        if(motionDna.location.globalLocation.latitude == 0.0
-            && motionDna.location.globalLocation.longitude == 0.0) {
-            Toast.makeText(activity, "Data received, latitude : "+drawLatLng.latitude+", longitude: "+drawLatLng.longitude, Toast.LENGTH_SHORT).show()
+        if(CURRENT_MOTIONDNA == RECORDING_MOTIONDNA) {
+
+            //Log.i(TAG, str)
+            //motionDna.location.globalLocation.latitude
+            val drawLatLng: LatLng = LatLng(
+                motionDna.location.globalLocation.latitude,
+                motionDna.location.globalLocation.longitude
+            )
+
+
+            if (motionDna.location.globalLocation.latitude == 0.0
+                && motionDna.location.globalLocation.longitude == 0.0
+            ) {
+                Toast.makeText(
+                    activity,
+                    "Data received, latitude : " + drawLatLng.latitude + ", longitude: " + drawLatLng.longitude,
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+
+            //Toast.makeText(activity, "Data received, latitude : "+drawLatLng.latitude+", longitude: "+drawLatLng.longitude, Toast.LENGTH_SHORT).show()
+            //mListener.drawLinesFromTracker(drawLatLng)
+            mListener.drawSymbolFromTracker(drawLatLng)
         }
-
-        //Toast.makeText(activity, "Data received, latitude : "+drawLatLng.latitude+", longitude: "+drawLatLng.longitude, Toast.LENGTH_SHORT).show()
-        //mListener.drawLinesFromTracker(drawLatLng)
-        mListener.drawSymbolFromTracker(drawLatLng)
     }
 
     override fun reportError(errorCode: MotionDna.ErrorCode?, s: String?) {

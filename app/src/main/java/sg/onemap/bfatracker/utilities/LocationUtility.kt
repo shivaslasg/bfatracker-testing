@@ -46,12 +46,12 @@ class LocationUtility (var activity: MainActivity, var mapboxMap: MapboxMap,
                 .accuracyColor(ContextCompat.getColor(activity, android.R.color.holo_blue_bright))
                 .build()
 
-            val locationComponentActivationOptions = LocationComponentActivationOptions.builder(activity, mapboxMap?.style!!)
+            val locationComponentActivationOptions = LocationComponentActivationOptions.builder(activity, mapboxMap.style!!)
                 .locationComponentOptions(customLocationComponentOptions)
                 .build()
 
             // Get an instance of the LocationComponent and then adjust its settings
-            mapboxMap?.locationComponent.apply {
+            mapboxMap.locationComponent.apply {
 
                 // Activate the LocationComponent with options
                 activateLocationComponent(locationComponentActivationOptions)
@@ -68,7 +68,7 @@ class LocationUtility (var activity: MainActivity, var mapboxMap: MapboxMap,
 
             if (isLocationEnabled(activity)) {
                 //zoom in
-                mapboxMap?.locationComponent.zoomWhileTracking(19.0)
+                mapboxMap.locationComponent.zoomWhileTracking(19.0)
             }
         }catch (ex : Exception){
             Log.e(TAG, "error occurred in enabling location component")
@@ -122,6 +122,15 @@ class LocationUtility (var activity: MainActivity, var mapboxMap: MapboxMap,
         }
     }
 
+    fun getBearings(): Float? {
+       var bearings: Float? = null
+       try {
+           bearings = mapboxMap.locationComponent.compassEngine?.lastHeading
+       } catch (ex:Exception){
+           Log.e(TAG, "Error occurred in getting bearings : "+ex.message.toString())
+       }
+       return bearings
+    }
 
     private fun isLocationEnabled(mContext: Context): Boolean {
         val lm = mContext.getSystemService(Context.LOCATION_SERVICE) as LocationManager
