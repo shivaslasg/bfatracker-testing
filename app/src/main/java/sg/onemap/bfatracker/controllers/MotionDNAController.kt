@@ -1,4 +1,4 @@
-package sg.onemap.bfatracker
+package sg.onemap.bfatracker.controllers
 
 import android.content.Context
 import android.content.pm.PackageManager
@@ -8,12 +8,13 @@ import com.mapbox.mapboxsdk.geometry.LatLng
 import com.navisens.motiondnaapi.MotionDna
 import com.navisens.motiondnaapi.MotionDnaApplication
 import com.navisens.motiondnaapi.MotionDnaInterface
-import sg.onemap.bfatracker.interfaces.drawTrackerListener
+import sg.onemap.bfatracker.MainActivity
+import sg.onemap.bfatracker.interfaces.DrawTrackerListener
 
 class MotionDNAController(var activity: MainActivity,
                           var pkg: PackageManager,
                           var motiondnaid: String,
-                          var mListener: drawTrackerListener) : MotionDnaInterface {
+                          var mListener: DrawTrackerListener) : MotionDnaInterface {
     var motionDnaApplication: MotionDnaApplication? = null
 
     var selectedinterval = 1000.0
@@ -39,6 +40,7 @@ class MotionDNAController(var activity: MainActivity,
 
     fun initMotionDna() {
         motionDnaApplication = MotionDnaApplication(this)
+        motionDnaApplication!!.runMotionDna(motiondnaid)
         //motionDnaApplication!!.setLocationNavisens()
         motionDnaApplication!!.setExternalPositioningState(MotionDna.ExternalPositioningState.HIGH_ACCURACY)
         motionDnaApplication!!.setPowerMode(MotionDna.PowerConsumptionMode.PERFORMANCE)
@@ -47,8 +49,6 @@ class MotionDNAController(var activity: MainActivity,
         motionDnaApplication!!.setCallbackUpdateRateInMs(selectedinterval)
         motionDnaApplication!!.setBackpropagationEnabled(true)
         motionDnaApplication!!.setBackpropagationBufferSize(2000)
-
-        motionDnaApplication!!.runMotionDna(motiondnaid)
     }
 
     fun fixMotionDnaLocation(location: LatLng){
@@ -58,6 +58,7 @@ class MotionDNAController(var activity: MainActivity,
                 location.longitude
             )
             Toast.makeText(activity, "Fixing location @ latitude : "+location.latitude+", longitude: "+location.longitude, Toast.LENGTH_SHORT).show()
+            mListener.addTrackRecord(location, 0.0)
         } catch (ex : Exception) {
             Log.e(TAG, ex.toString())
         }
@@ -65,8 +66,12 @@ class MotionDNAController(var activity: MainActivity,
 
     fun fixMotionDnaLocationWithBearing(location: LatLng, bearings: Float){
         try {
-            motionDnaApplication!!.setLocationLatitudeLongitudeAndHeadingInDegrees(location.latitude, location.longitude, bearings.toDouble())
+            motionDnaApplication!!.setLocationLatitudeLongitudeAndHeadingInDegrees(
+                                    location.latitude,
+                                    location.longitude,
+                                    bearings.toDouble())
             Toast.makeText(activity, "Fixing location @ latitude : "+location.latitude+", longitude: "+location.longitude+", with bearings (in degrees) :"+bearings, Toast.LENGTH_SHORT).show()
+            mListener.addTrackRecord(location, bearings.toDouble())
         } catch (ex : Exception) {
             Log.e(TAG, ex.toString())
         }

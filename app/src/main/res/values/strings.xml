@@ -11,5 +11,8 @@
     <string name="location_settings">LOCATION SETTINGS</string>
 
     <string name="motiondnaid">rrDwDxQdUMHccxfWy3oR394PdWHpSsiMfDiNSCtQZKxzmXrDL7mc21o7kprCZe2c</string>
+    <string name="title_track_list">Tracks</string>
+    <string name="title_track_detail">Track Detail</string>
+    <string name="title_activity_realm_list">RealmListActivity</string>
 
 </resources>

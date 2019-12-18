@@ -1,7 +1,9 @@
 package sg.onemap.bfatracker
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.app.AlertDialog
+import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.location.Location
 import androidx.appcompat.app.AppCompatActivity
@@ -10,10 +12,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
-import android.widget.AdapterView
-import android.widget.AutoCompleteTextView
-import android.widget.LinearLayout
-import android.widget.Toast
+import android.widget.*
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.view.isVisible
@@ -26,15 +25,19 @@ import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
 import com.mapbox.mapboxsdk.maps.Style
-import kotlinx.android.synthetic.main.add_comment_form.view.*
 import sg.onemap.bfatracker.adapters.SearchDataAdapter
+import sg.onemap.bfatracker.controllers.MotionDNAController
+import sg.onemap.bfatracker.controllers.RealmController
 import sg.onemap.bfatracker.interfaces.WebUtilityListener
-import sg.onemap.bfatracker.interfaces.drawTrackerListener
+import sg.onemap.bfatracker.interfaces.DrawTrackerListener
+import sg.onemap.bfatracker.interfaces.RealmUtilityListener
 import sg.onemap.bfatracker.models.*
+import sg.onemap.bfatracker.models.realm.TrackGeoDetail
 import sg.onemap.bfatracker.utilities.*
 
 class MainActivity : AppCompatActivity(), OnMapReadyCallback,
-    WebUtilityListener, PermissionsListener, LocationListeningCallback.LocationListener, drawTrackerListener {
+    WebUtilityListener, PermissionsListener, LocationListeningCallback.LocationListener, DrawTrackerListener,
+    RealmUtilityListener {
 
     var mapView: MapView? = null
     var mapboxMap: MapboxMap? = null
@@ -44,6 +47,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback,
     var utility : Utility? = null
     var locationUtility : LocationUtility? = null
     lateinit var motionDnaController: MotionDNAController
+    lateinit var realmController : RealmController
 
     var autoCompleteTextView : AutoCompleteTextView? = null
     var themeSymbolBtn : FloatingActionButton? = null
@@ -66,6 +70,8 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback,
     var latestBearing : Float? = null
 
     private var permissionsManager: PermissionsManager = PermissionsManager(this)
+
+    var REQUEST_CODE : Int = 101;
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -160,9 +166,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback,
                         motionDnaController.fixMotionDnaLocation(latestChosenLocation!!)
                     }
 
-                    fixLocationBtn!!.isSelected = true
-                    controlBtn?.isEnabled = true
-                    controlBtn?.drawable?.alpha = 225
                 } else {
                     val dialog = AlertDialog.Builder(this)
                     dialog.apply {
@@ -175,6 +178,15 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback,
         }
 
         uploadBtn = findViewById(R.id.uploadBtn)
+        uploadBtn?.setOnClickListener{
+            val intent = Intent(this, RealmListActivity::class.java)
+            intent.putExtra("SHOW_WELCOME", true)
+            startActivityForResult(intent, REQUEST_CODE)
+            //finish()
+        }
+
+
+
         controlBtn = findViewById(R.id.controlBtn)
         controlBtn?.isEnabled = false
         controlBtn?.drawable?.alpha = 125
@@ -242,6 +254,10 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback,
                 }.show()
             } else {
                 motionDnaController.stopMotionDna()
+
+                val trackId :String? = utility?.sharedPref?.getString(Utility.SharedPrefConstants.TRACK_PRIMARYKEY,"")
+                realmController.updateTrackEndTiming(trackId.toString())
+
                 recordTrackBtn?.isSelected = false
                 //change back fix location
                 fixLocationBtn!!.isSelected = false
@@ -275,7 +291,8 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback,
                     .setView(commentForm)
                     .setTitle("Comment Form")
                 val mAlertDialog = mBuilder.show()
-                commentForm.addCommentBtn.setOnClickListener{
+                val addCommentBtn:Button = commentForm.findViewById(R.id.addCommentBtn)
+                addCommentBtn?.setOnClickListener{
                     mAlertDialog.dismiss()
                 }
             } else {
@@ -287,8 +304,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback,
                 }.show()
             }
         }
-
-
 
         intervalBtn = findViewById(R.id.intervalBtn)
         intervalBtn?.setOnClickListener{
@@ -315,9 +330,9 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback,
                 show()
             }
         }
+
+        realmController = RealmController(this, this)
     }
-
-
 
     private val editor = object : TextWatcher {
         var newMicro: Long = 0
@@ -363,10 +378,13 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback,
             enableLocationComponent(it)
 
             // Instantiating MotionDnaDataSource, passing in context, packagemanager and Navisens devkey
-            motionDnaController = MotionDNAController(this@MainActivity,
-                                                        packageManager,
-                                                        getString(R.string.motiondnaid),
-                                                this@MainActivity)
+            motionDnaController =
+                MotionDNAController(
+                    this@MainActivity,
+                    packageManager,
+                    getString(R.string.motiondnaid),
+                    this@MainActivity
+                )
         }
     }
 
@@ -532,11 +550,58 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback,
     override fun drawSymbolFromTracker(latLng: LatLng) {
         try {
             mapUtility?.drawSymbolForMotionDNA(latLng)
+
+            val trackId :String? = utility?.sharedPref?.getString(Utility.SharedPrefConstants.TRACK_PRIMARYKEY,"")
+
+            realmController?.addGeoTrackDetail(trackId, latLng.latitude, latLng.longitude)
            // Toast.makeText(this, "drawSymbolFromTracker at lat: "+latLng.latitude+", longitude: "+latLng.longitude, Toast.LENGTH_SHORT).show()
         }catch(ex:Exception){
             Log.e("error", "Error occurred in drawSymbolFromTracker : "+ex.message.toString())
         }
     }
 
+    override fun addTrackRecord(latLng: LatLng, bearing: Double) {
+        realmController.addNewTrack(latLng.latitude, latLng.longitude, bearing)
+    }
+
+    override fun addedRealmTrackRecord(primarykey: String) {
+        //store primary key
+        utility?.save(Utility.SharedPrefConstants.TRACK_PRIMARYKEY, primarykey)
+        fixLocationBtn!!.isSelected = true
+        controlBtn?.isEnabled = true
+        controlBtn?.drawable?.alpha = 225
+    }
+
+
     //endregion
+
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        when (requestCode) {
+            REQUEST_CODE -> {
+                Log.v("ProjectDetails", "REQUEST_PICK_IMAGE called")
+                if (resultCode == Activity.RESULT_OK) {
+                    if (data != null) {
+                        try {
+                            var trackId : String = data.getStringExtra("trackId");
+                            var results = realmController.getAllTrackGeoDetails(trackId)
+                            mapUtility?.clearAllMappings()
+                            mapUtility?.clearMapOfMarker()
+                            for(target:TrackGeoDetail in results){
+                                var lat:Double = target.latitude
+                                var lng:Double = target.longitude
+                                var passLatLng = LatLng(lat, lng)
+                                mapUtility?.drawSymbolForMotionDNA(passLatLng)
+                            }
+                        } catch (e: Exception) {
+                            Toast.makeText(this, "Can't set background.", Toast.LENGTH_SHORT).show()
+                        }
+                    } else {
+                        Log.v("ProjectDetails", "data is null")
+                    }
+                }
+            }
+        }
+    }
 }

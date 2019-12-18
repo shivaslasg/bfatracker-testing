@@ -16,6 +16,7 @@ class Utility(context: Context) {
         const val PRIVATE_TOKEN_EXPIRYTIMESTAMP = "PRIVATE_TOKEN_EXPIRYTIMESTAMP"
         const val FIXED_LATITUDE = 1.273750
         const val FIXED_LONGITUDE = 103.801514
+        const val TRACK_PRIMARYKEY = "TRACK_PRIMARYKEY"
     }
 
     fun save(KEY_NAME: String, value: String) {
