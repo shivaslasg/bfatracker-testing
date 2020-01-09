@@ -17,6 +17,7 @@ class Utility(context: Context) {
         const val FIXED_LATITUDE = 1.273750
         const val FIXED_LONGITUDE = 103.801514
         const val TRACK_PRIMARYKEY = "TRACK_PRIMARYKEY"
+        const val TRACK_TITLE = "TRACK_TITLE"
     }
 
     fun save(KEY_NAME: String, value: String) {

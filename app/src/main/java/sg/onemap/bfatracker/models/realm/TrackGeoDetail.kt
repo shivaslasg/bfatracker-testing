@@ -1,5 +1,6 @@
 package sg.onemap.bfatracker.models.realm
 
+import android.os.Parcelable
 import io.realm.RealmList
 import io.realm.RealmObject
 import io.realm.RealmResults
@@ -7,7 +8,9 @@ import io.realm.annotations.LinkingObjects
 import io.realm.annotations.PrimaryKey
 import io.realm.annotations.RealmClass
 import io.realm.annotations.Required
+import kotlinx.android.parcel.Parcelize
 
+@Parcelize
 @RealmClass
 open class TrackGeoDetail(
     // You can put properties in the constructor as long as all of them are initialized with
@@ -30,8 +33,8 @@ open class TrackGeoDetail(
 //    @LinkingObjects("geoDetails")
 //    var trackId: RealmResults<Track>? = null
 
-) : RealmObject() {
+) : RealmObject(), Parcelable {
     // The Kotlin compiler generates standard getters and setters.
     // Realm will overload them and code inside them is ignored.
-    // So if you prefer you can also just have empty abstract methods.
+    // So if you prefer yo  u can also just have empty abstract methods.
 }

@@ -91,6 +91,7 @@ class MotionDNAController(var activity: MainActivity,
         try {
             motionDnaApplication!!.stop()
             CURRENT_MOTIONDNA = STOPPED_MOTIONDNA
+            //mListener.updateEndTrackRecord(location, 0.0)
             Log.i(TAG, "stopMotionDna")
         } catch (ex : Exception) {
             Log.e(TAG, ex.toString())

@@ -132,7 +132,7 @@
             />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/uploadBtn"
+            android:id="@+id/reportBtn"
             android:layout_width="44dp"
             android:layout_height="44dp"
             app:backgroundTint="@android:color/white"
@@ -144,8 +144,19 @@
             app:maxImageSize="30dp"
             />
 
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/onemaplogo"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            app:backgroundTint="@android:color/white"
+            android:src="@drawable/onemap_logo_white_edge"
+            android:visibility="visible"
+            android:clickable="true"
+            android:layout_marginBottom="10dp"
+            app:fabCustomSize="44dp"
+            app:maxImageSize="30dp"
+            />
     </LinearLayout>
-
 
     <LinearLayout
         android:id="@+id/locationPanel"
@@ -159,11 +170,11 @@
         android:layout_marginBottom="15dp">
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fixLocationBtn"
+            android:id="@+id/fixLocationBearingBtn"
             android:layout_width="44dp"
             android:layout_height="44dp"
             app:backgroundTint="@android:color/white"
-            android:src="@drawable/icons_location_calibrate_selector"
+            android:src="@drawable/icons_location_calibrate_bearing"
             android:visibility="visible"
             android:clickable="true"
             android:layout_marginBottom="10dp"
@@ -171,6 +182,18 @@
             app:maxImageSize="36dp"
             />
 
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fixLocationBtn"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            app:backgroundTint="@android:color/white"
+            android:src="@drawable/icons_location_calibrate"
+            android:visibility="visible"
+            android:clickable="true"
+            android:layout_marginBottom="10dp"
+            app:fabCustomSize="44dp"
+            app:maxImageSize="36dp"
+            />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/currentLocationBtn"
@@ -239,5 +262,18 @@
 
     </LinearLayout>
     -->
+
+
+    <FrameLayout
+        android:id="@+id/comment_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:translationZ="15dp"
+        android:visibility="gone"
+        android:gravity="center_vertical"
+        android:layout_marginTop="100dp"
+        android:layout_marginLeft="25dp"
+        android:layout_marginRight="25dp"
+        android:layout_marginBottom="25dp"/>
 
 </FrameLayout>

@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "446884866133",
+    "firebase_url": "https://bfatracker.firebaseio.com",
+    "project_id": "bfatracker",
+    "storage_bucket": "bfatracker.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:446884866133:android:6b4ee71fef2290a9ea4cdc",
+        "android_client_info": {
+          "package_name": "sg.onemap.bfatracker"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "446884866133-e9hr0d2sk3vajrj14k20frckdf9to721.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAMdiuDTK4wkzQgXCeptb19ErVzq9fPUxg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "446884866133-e9hr0d2sk3vajrj14k20frckdf9to721.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

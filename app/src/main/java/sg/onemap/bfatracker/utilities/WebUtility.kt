@@ -108,7 +108,7 @@ class WebUtility(var context: Context, var mListener: WebUtilityListener) {
                             val revgeocode = revgeocodeResponse.GeocodeInfo
                             if(revgeocode != null &&
                                 revgeocode.size > 0) {
-                                mListener.returnResultsForRevgeocode(revgeocode.get(0))
+                                mListener.returnResultsForRevgeocode(revgeocode.get(0), point)
                             }
 
                         }

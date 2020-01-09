@@ -9,7 +9,9 @@
         android:id="@+id/descSection"
         android:orientation="vertical"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_toLeftOf="@id/trackFuns"
+        android:layout_alignParentLeft="true">
 
         <TextView
             android:id="@+id/title"
@@ -25,6 +27,22 @@
             />
 
         <TextView
+            android:id="@+id/trackdate"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="?android:attr/selectableItemBackground"
+            android:gravity="center_vertical"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:text="trackdate"
+            android:autoSizeMinTextSize="8sp"
+            android:autoSizeMaxTextSize="12sp"
+            android:visibility="gone"
+            />
+
+        <TextView
             android:id="@+id/timing"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -32,45 +50,52 @@
             android:gravity="center_vertical"
             android:paddingLeft="16dp"
             android:paddingRight="16dp"
-            android:textSize="16sp"
+            android:textSize="12sp"
             android:textStyle="bold"
-            android:text="description"
+            android:text="tracktiming"
+            android:autoSizeMinTextSize="8sp"
+            android:autoSizeMaxTextSize="12sp"
             />
 
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/trackFuns"
         android:orientation="horizontal"
-        android:layout_width="215dp"
+        android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_alignParentRight="true">
         <ImageButton
             android:id="@+id/loadBtn"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
             android:src="@drawable/icons_polyline"
             android:background="@android:color/white"
-            android:layout_marginRight="10dp"/>
+            android:layout_marginRight="10dp"
+            android:scaleType="fitCenter"/>
         <ImageButton
             android:id="@+id/downloadBtn"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
             android:src="@drawable/icons_download"
             android:background="@android:color/white"
-            android:layout_marginRight="10dp"/>
+            android:layout_marginRight="10dp"
+            android:scaleType="fitCenter"/>
         <ImageButton
             android:id="@+id/uploadBtn"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
             android:src="@drawable/icons_upload"
             android:background="@android:color/white"
-            android:layout_marginRight="10dp"/>
+            android:layout_marginRight="10dp"
+            android:scaleType="fitCenter"/>
         <ImageButton
             android:id="@+id/deleteBtn"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
             android:src="@drawable/icons_delete_bin"
-            android:background="@android:color/white"/>
+            android:background="@android:color/white"
+            android:scaleType="fitCenter"/>
     </LinearLayout>
 
 

@@ -1,6 +1,5 @@
 package sg.onemap.bfatracker.adapters
 
-import android.content.ClipData.Item
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,6 +11,7 @@ import io.realm.OrderedRealmCollection
 import io.realm.RealmRecyclerViewAdapter
 import sg.onemap.bfatracker.R
 import sg.onemap.bfatracker.RealmListActivity
+import sg.onemap.bfatracker.controllers.RealmController
 import sg.onemap.bfatracker.models.realm.Track
 
 
@@ -31,30 +31,23 @@ class TrackAdapter (data: OrderedRealmCollection<Track?>?, var mListener: RealmL
         holder: TrackHolder,
         position: Int
     ) {
-        val tryoutobj : Track? = data?.get(position)
+        val trackObj : Track? = data?.get(position)
         //val obj = getItem(position)
-        holder.title.setText(tryoutobj?.name)
-        holder.timing.setText("From : "+tryoutobj?.startDateTime+" till "+tryoutobj?.endDateTime)
+        holder.title.setText(trackObj?.name)
+        holder.timing.setText("From : "+trackObj?.startDateTime+" till "+trackObj?.endDateTime)
         holder.loadBtn.setOnClickListener {
-            mListener.assignTrackTask(tryoutobj?.id.toString(), 1)
+            mListener.assignTrackTask(trackObj, RealmController.TrackTaskConstants.TRACK_DRAW) //trackObj?.id.toString()
         }
-        /*
-        holder.deletedCheckBox.isChecked = countersToDelete.contains(itemId)
-        if (inDeletionMode) {
-            holder.deletedCheckBox.setOnCheckedChangeListener { buttonView, isChecked ->
-                if (isChecked) {
-                    countersToDelete.add(itemId)
-                } else {
-                    countersToDelete.remove(itemId)
-                }
-            }
-        } else {
-            holder.deletedCheckBox.setOnCheckedChangeListener(null)
+        holder.deleteBtn.setOnClickListener {
+            mListener.assignTrackTask(trackObj, RealmController.TrackTaskConstants.TRACK_DELETE)
         }
-        holder.deletedCheckBox.visibility = if (inDeletionMode) View.VISIBLE else View.GONE
-        */
+        holder.uploadBtn.setOnClickListener {
+            mListener.assignTrackTask(trackObj, RealmController.TrackTaskConstants.TRACK_UPLOAD)
+        }
+        holder.downloadBtn.setOnClickListener {
+            mListener.assignTrackTask(trackObj, RealmController.TrackTaskConstants.TRACK_DOWNLOAD)
+        }
     }
-
 
     class TrackHolder(view : View) : RecyclerView.ViewHolder(view) {
         var title: TextView
@@ -63,7 +56,6 @@ class TrackAdapter (data: OrderedRealmCollection<Track?>?, var mListener: RealmL
         var downloadBtn: ImageButton
         var uploadBtn: ImageButton
         var deleteBtn: ImageButton
-        var data: Item? = null
 
         init {
             title = view.findViewById(R.id.title)

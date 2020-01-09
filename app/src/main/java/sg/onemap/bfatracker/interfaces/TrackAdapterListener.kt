@@ -1,5 +1,7 @@
 package sg.onemap.bfatracker.interfaces
 
+import sg.onemap.bfatracker.models.realm.Track
+
 interface TrackAdapterListener {
-    fun assignTrackTask(trackId: String, taskId : Int)
+    fun assignTrackTask(track: Track?, taskId : String)
 }
