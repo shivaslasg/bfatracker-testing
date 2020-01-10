@@ -25,7 +25,7 @@ open class Track(
 
     var startLongitude: Double = 0.0,
 
-    var bearing: Double = 0.0,
+    var heading: Double = 0.0,
 
     var startDateTime: String = "",
 

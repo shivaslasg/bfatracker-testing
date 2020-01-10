@@ -16,7 +16,7 @@ open class TrackReCalibrate (
 
     var recalibrateLongitude: Double = 0.0,
 
-    var recalibrateBearing: Double = 0.0,
+    var recalibrateHeading: Double = 0.0,
 
     var trackId: String = ""
 ) : RealmObject(), Parcelable {

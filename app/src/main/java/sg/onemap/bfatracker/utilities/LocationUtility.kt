@@ -122,14 +122,14 @@ class LocationUtility (var activity: MainActivity, var mapboxMap: MapboxMap,
         }
     }
 
-    fun getBearings(): Float? {
-       var bearings: Float? = null
+    fun getHeadings(): Float? {
+       var headings: Float? = null
        try {
-           bearings = mapboxMap.locationComponent.compassEngine?.lastHeading
+           headings = mapboxMap.locationComponent.compassEngine?.lastHeading
        } catch (ex:Exception){
-           Log.e(TAG, "Error occurred in getting bearings : "+ex.message.toString())
+           Log.e(TAG, "Error occurred in getting headings : "+ex.message.toString())
        }
-       return bearings
+       return headings
     }
 
     private fun isLocationEnabled(mContext: Context): Boolean {

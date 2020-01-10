@@ -51,7 +51,7 @@ class RealmController(var context: Context,
         }
     }
 
-    fun addNewTrack(latitude : Double, longitude: Double, bearing : Double) {
+    fun addNewTrack(latitude : Double, longitude: Double, heading : Double) {
         // All writes must be wrapped in a transaction to facilitate safe multi threading
         var primarykey: String = ""
         var title: String = ""
@@ -67,7 +67,7 @@ class RealmController(var context: Context,
             tracker.id = primarykey
             tracker.startLatitude = latitude
             tracker.startLongitude = longitude
-            tracker.bearing = bearing
+            tracker.heading = heading
 
             val fmt: org.joda.time.format.DateTimeFormatter = DateTimeFormat.forPattern("dd-MM-yyyy hh:mm:ss a")
 
@@ -87,7 +87,7 @@ class RealmController(var context: Context,
         }
     }
 
-    fun addTrackRecalibrate(trackId: String?, latLng: LatLng, bearing: Double){
+    fun addTrackRecalibrate(trackId: String?, latLng: LatLng, heading: Double){
         var primarykey: String = ""
 
         realm.executeTransactionAsync({ bgRealm ->
@@ -96,7 +96,7 @@ class RealmController(var context: Context,
             trackReCalibrate.id = primarykey
             trackReCalibrate.recalibrateLatitude = latLng.latitude
             trackReCalibrate.recalibrateLongitude = latLng.longitude
-            trackReCalibrate.recalibrateBearing = bearing
+            trackReCalibrate.recalibrateHeading = heading
             trackReCalibrate.trackId = trackId.toString()
 
 

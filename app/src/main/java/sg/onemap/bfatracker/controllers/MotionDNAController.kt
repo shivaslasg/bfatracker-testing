@@ -64,14 +64,14 @@ class MotionDNAController(var activity: MainActivity,
         }
     }
 
-    fun fixMotionDnaLocationWithBearing(location: LatLng, bearings: Float){
+    fun fixMotionDnaLocationWithHeading(location: LatLng, heading: Float){
         try {
             motionDnaApplication!!.setLocationLatitudeLongitudeAndHeadingInDegrees(
                                     location.latitude,
                                     location.longitude,
-                                    bearings.toDouble())
-            Toast.makeText(activity, "Fixing location @ latitude : "+location.latitude+", longitude: "+location.longitude+", with bearings (in degrees) :"+bearings, Toast.LENGTH_SHORT).show()
-            mListener.addTrackRecord(location, bearings.toDouble())
+                                    heading.toDouble())
+            Toast.makeText(activity, "Fixing location @ latitude : "+location.latitude+", longitude: "+location.longitude+", with heading (in degrees) :"+heading, Toast.LENGTH_SHORT).show()
+            mListener.addTrackRecord(location, heading.toDouble())
         } catch (ex : Exception) {
             Log.e(TAG, ex.toString())
         }
