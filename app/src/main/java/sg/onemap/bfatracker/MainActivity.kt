@@ -38,6 +38,7 @@ import sg.onemap.bfatracker.adapters.SearchDataAdapter
 import sg.onemap.bfatracker.controllers.MotionDNAController
 import sg.onemap.bfatracker.controllers.RealmController
 import sg.onemap.bfatracker.fragments.CommentFormFragment
+import sg.onemap.bfatracker.fragments.HeadingFormFragment
 import sg.onemap.bfatracker.fragments.ViewCommentFragment
 import sg.onemap.bfatracker.interfaces.*
 import sg.onemap.bfatracker.models.*
@@ -50,7 +51,7 @@ import java.io.File
 
 class MainActivity : AppCompatActivity(), OnMapReadyCallback,
     WebUtilityListener, PermissionsListener, LocationListeningCallback.LocationListener, DrawTrackerListener,
-    RealmUtilityListener, CommentFormListener, ViewCommentListener {
+    RealmUtilityListener, CommentFormListener, ViewCommentListener, HeadingFormListener {
 
     var mapView: MapView? = null
     var mapboxMap: MapboxMap? = null
@@ -70,7 +71,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback,
     var currentLocationBtn : FloatingActionButton? = null
 
     var remoteControlUIPanel : LinearLayout? = null
-    var fixLocationBtn : FloatingActionButton? = null
+    //var fixLocationBtn : FloatingActionButton? = null
     var reportBtn : FloatingActionButton? = null
     var controlBtn : FloatingActionButton? = null
     var stopTrackBtn : FloatingActionButton? = null
@@ -95,6 +96,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback,
 
     val commentFormFragmentTag: String = "commentFormFragmentTag"
     val viewCommentFragmentTag: String = "viewCommentFragmentTag"
+    val headingFormFragmentTag: String = "heaingFormFragmentTag"
 
     var fixLocationHeadingBtn : FloatingActionButton? = null
 
@@ -124,13 +126,13 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback,
             val addressItem: Address = parent.getItemAtPosition(position) as Address
             autoCompleteTextView?.setText(addressItem.BUILDING, false)
             autoCompleteTextView?.setSelection(addressItem.BUILDING?.length!!)
-            if(fixLocationBtn!!.isSelected) {
+            /*if(fixLocationBtn!!.isSelected) {
                 var readjustLatLng = LatLng(addressItem.LATITUDE?.toDouble()!!,addressItem.LONGITUDE?.toDouble()!!)
                 mapUtility?.drawMapUnPinSymbolForMotionDNA(readjustLatLng!!)
                 latestHeading = 0.0f
             } else {
                 mapUtility?.drawSearchMarker((addressItem))
-            }
+            }*/
 
             if(fixLocationHeadingBtn!!.isSelected) {
                 var readjustLatLng = LatLng(addressItem.LATITUDE?.toDouble()!!,addressItem.LONGITUDE?.toDouble()!!)
@@ -196,16 +198,19 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback,
             if(currentLocationBtn!!.isSelected){
                 locationUtility?.removeLocationUpdates()
                 currentLocationBtn!!.isSelected = false
-                mapUtility?.clearMapOfMarker()
+                if(motionDnaController.getCurrentStateForMotionDNA() != motionDnaController.RECORDING_MOTIONDNA
+                    && motionDnaController.getCurrentStateForMotionDNA() != motionDnaController.PAUSE_MOTIONDNA) {
+                    mapUtility?.clearMapOfMarker()
+                }
                 latestChosenLocation = null
             } else {
                 locationUtility?.requestLocationUpdates()
             }
         }
 
-        fixLocationBtn = findViewById(R.id.fixLocationBtn)
+        //fixLocationBtn = findViewById(R.id.fixLocationBtn)
 
-        fixLocationBtn?.setOnClickListener{
+        /*fixLocationBtn?.setOnClickListener{
             if(fixLocationBtn!!.isSelected) {
                 motionDnaController.fixMotionDnaLocation(latestChosenLocation!!)
                 val trackId :String? = utility?.sharedPref?.getString(Utility.SharedPrefConstants.TRACK_PRIMARYKEY,"")
@@ -241,35 +246,21 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback,
             }
         }
 
+         */
+
         fixLocationHeadingBtn = findViewById(R.id.fixLocationHeadingBtn)
         fixLocationHeadingBtn?.setOnClickListener{
             if(fixLocationHeadingBtn!!.isSelected) {
-
-                //motionDnaController.fixMotionDnaLocation(latestChosenLocation!!)
-                val trackId :String? = utility?.sharedPref?.getString(Utility.SharedPrefConstants.TRACK_PRIMARYKEY,"")
                 mapUtility?.drawMapPinSymbolForMotionDNA(latestChosenLocation!!)
-                if(latestHeading != null && latestHeading!!.toDouble() > 0.0) {
-                    motionDnaController.fixMotionDnaLocationWithHeading(latestChosenLocation!!, latestHeading!!)
-                } else {
-                    latestHeading = 0.0f
-                    Toast.makeText(this, "Latest heading is 0.0", Toast.LENGTH_SHORT).show()
-                    motionDnaController.fixMotionDnaLocation(latestChosenLocation!!)
-                }
-                realmController?.addTrackRecalibrate(trackId, latestChosenLocation!!, latestHeading!!.toDouble())
+                showHeadingFormFragment()
             } else {
 
                 mapUtility?.clearAllMappings()
                 if (latestChosenLocation != null) {
                     //motionDnaController.fixMotionDnaLocation(latestChosenLocation!!)
-                    if(latestHeading != null && latestHeading!! > 0.0f) {
-                        motionDnaController.fixMotionDnaLocationWithHeading(latestChosenLocation!!, latestHeading!!)
-                    } else {
-                        Toast.makeText(this, "Latest heading is 0.0", Toast.LENGTH_SHORT).show()
-                        motionDnaController.fixMotionDnaLocation(latestChosenLocation!!)
+                    if(latestHeading == null) {
+                        showHeadingFormFragment()
                     }
-                    remoteControlUIPanel!!.isVisible = true
-                    controlBtn!!.isSelected = true
-                    fixLocationBtn?.isVisible = false
                 } else {
                     val dialog = AlertDialog.Builder(this)
                     dialog.apply {
@@ -292,11 +283,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback,
                     setPositiveButton("Continue Recording", { dialog,which -> dialog.dismiss()})
                     setNegativeButton("Stop Recording", { _,_->
                         stopRecording()
-                        /*motionDnaController.stopMotionDna()
-                        recordTrackBtn?.isSelected = false
-                        remoteControlUIPanel!!.isVisible = false
-                        */
-
                     })
                 }.show()
             } else {
@@ -321,10 +307,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback,
                         setPositiveButton("Continue Recording", { dialog,which -> dialog.dismiss()})
                         setNegativeButton("Stop Recording", { _,_->
                             stopRecording()
-                            /*motionDnaController.stopMotionDna()
-                            recordTrackBtn?.isSelected = false
-                            remoteControlUIPanel!!.isVisible = false
-                            */
                         })
                     }.show()
                 } else {
@@ -353,7 +335,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback,
                     realmController.addNewTrack(latestChosenLocation!!.latitude, latestChosenLocation!!.longitude, latestHeading!!.toDouble())
                     motionDnaController.startMotionDna()
                     recordTrackBtn?.isSelected = true
-                    fixLocationBtn?.setImageResource(R.drawable.icons_map_pin)
+                    //fixLocationBtn?.setImageResource(R.drawable.icons_map_pin)
                     fixLocationHeadingBtn?.setImageResource(R.drawable.icons_map_pin)
                 } else {
                     val dialog = AlertDialog.Builder(this)
@@ -376,60 +358,11 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback,
                     setPositiveButton("Continue pausing", { dialog,which -> dialog.dismiss()})
                     setNegativeButton("Stop Recording", { _,_->
                         stopRecording()
-                        /*
-                        motionDnaController.stopMotionDna()
-                        recordTrackBtn?.isSelected = false
-                        remoteControlUIPanel!!.isVisible = false
-                         */
                     })
                 }.show()
             } else
             {
                 stopRecording()
-               /* motionDnaController.stopMotionDna()
-                fixLocationBtn?.setImageResource(R.drawable.icons_location_calibrate)
-                fixLocationHeadingBtn?.setImageResource(R.drawable.icons_location_calibrate_heading)
-
-                val trackId :String? = utility?.sharedPref?.getString(Utility.SharedPrefConstants.TRACK_PRIMARYKEY,"")
-                val trackTitle :String? = utility?.sharedPref?.getString(Utility.SharedPrefConstants.TRACK_TITLE,"")
-                realmController.updateTrackEndTiming(trackId.toString())
-
-                if(currentLatLng != null){
-                    realmController.updateDestinationLatLng(currentLatLng!!, trackId.toString())
-                }
-
-                var editText = EditText(this)
-                editText.setText(trackTitle)
-                val builder = AlertDialog.Builder(this)
-                // Set the dialog title
-                builder.setTitle("Save Title")
-                    .setMessage("Change title of recording")
-                    .setView(editText)
-                    // Set the action buttons
-                    .setPositiveButton("Save",
-                        DialogInterface.OnClickListener { dialog, id ->
-                            // User clicked OK, so save the selectedItems results somewhere
-                            // or return them to the component that opened the dialog
-                        realmController.updateTrackTitle(trackId!!, editText.text.toString())
-                        })
-                    .setNegativeButton("Cancel",
-                        DialogInterface.OnClickListener { dialog, id ->
-                            dialog.dismiss()
-                        })
-
-                builder.create()
-                builder.show()
-
-                recordTrackBtn?.isSelected = false
-                fixLocationBtn!!.isSelected = false
-                fixLocationHeadingBtn!!.isSelected = false
-
-                remoteControlUIPanel!!.isVisible = false
-                controlBtn!!.isSelected = false
-                //remove all drawings
-                mapUtility?.clearAllMappings()
-
-                */
             }
         }
 
@@ -511,10 +444,34 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback,
         realmController = RealmController(this, this)
     }
 
-    fun stopRecording() {
+    fun showHeadingFormFragment() {
+        locationUtility?.removeLocationUpdates()
+        if(currentLocationBtn!!.isSelected)
+            currentLocationBtn!!.isSelected = false
 
+        val headFormFragment = HeadingFormFragment(this)
+
+        supportFragmentManager.beginTransaction()
+            .add(R.id.comment_container, headFormFragment, headingFormFragmentTag).commit()
+        commentContainer?.isVisible = true
+    }
+
+    fun fixMotionDnaLocationWithHeading() {
+        if(latestHeading != null && latestHeading!! > 0.0f) {
+            motionDnaController.fixMotionDnaLocationWithHeading(latestChosenLocation!!, latestHeading!!)
+        } else {
+            Toast.makeText(this, "Latest heading is 0.0", Toast.LENGTH_SHORT).show()
+            motionDnaController.fixMotionDnaLocation(latestChosenLocation!!)
+        }
+        remoteControlUIPanel!!.isVisible = true
+        controlBtn!!.isSelected = true
+        //fixLocationBtn?.isVisible = false
+    }
+
+
+    fun stopRecording() {
             motionDnaController.stopMotionDna()
-            fixLocationBtn?.setImageResource(R.drawable.icons_location_calibrate)
+            //fixLocationBtn?.setImageResource(R.drawable.icons_location_calibrate)
             fixLocationHeadingBtn?.setImageResource(R.drawable.icons_location_calibrate_heading)
 
             val trackId :String? = utility?.sharedPref?.getString(Utility.SharedPrefConstants.TRACK_PRIMARYKEY,"")
@@ -548,18 +505,18 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback,
             builder.show()
 
             recordTrackBtn?.isSelected = false
-            fixLocationBtn!!.isSelected = false
+            //fixLocationBtn!!.isSelected = false
             fixLocationHeadingBtn!!.isSelected = false
             pauseTrackBtn!!.isSelected = false
 
-            fixLocationBtn!!.visibility = View.VISIBLE
+            //fixLocationBtn!!.visibility = View.VISIBLE
             fixLocationHeadingBtn!!.visibility = View.VISIBLE
 
             remoteControlUIPanel!!.isVisible = false
             controlBtn!!.isSelected = false
             //remove all drawings
             mapUtility?.clearAllMappings()
-
+            latestHeading = null
     }
 
     private val editor = object : TextWatcher {
@@ -650,7 +607,8 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback,
                 mapUtility?.drawRevgeoMarker(revgeocode, originalPoint)
             }*/
 
-            if(fixLocationHeadingBtn!!.isSelected || fixLocationBtn!!.isSelected) {
+            //if(fixLocationHeadingBtn!!.isSelected || fixLocationBtn!!.isSelected) {
+            if(fixLocationHeadingBtn!!.isSelected) {
                 mapUtility?.drawMapUnPinSymbolForMotionDNA(originalPoint)
             } else{
                 mapUtility?.drawRevgeoMarker(revgeocode, originalPoint)
@@ -777,19 +735,22 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback,
         }
         latestChosenLocation = LatLng(latestLocation.latitude, latestLocation.longitude)
 
-        var headingInDegrees : Float? = locationUtility?.getHeadings()
-        latestHeading = headingInDegrees
+        //var headingInDegrees : Float? = locationUtility?.getHeadings()
+        //latestHeading = headingInDegrees
+        latestHeading = null
 
         //check whether this is to recalibrate
-        if(fixLocationHeadingBtn!!.isSelected || fixLocationBtn!!.isSelected) {
+        //if(fixLocationHeadingBtn!!.isSelected || fixLocationBtn!!.isSelected) {
+        if(fixLocationHeadingBtn!!.isSelected) {
             mapUtility?.drawMapUnPinSymbolForMotionDNA(LatLng(latestLocation.latitude, latestLocation.longitude))
         } else {
             mapUtility?.addMarkerToMap("","", latestLocation.latitude, latestLocation.longitude)
             mapUtility?.zoomCameraToLocation(latestLocation.latitude, latestLocation.longitude, 19.0)
         }
 
-        Toast.makeText(this, "Headings in degree: "+headingInDegrees, Toast.LENGTH_SHORT).show()
-        locationUtility?.removeLocationUpdates()
+
+        //Toast.makeText(this, "Headings in degree: "+headingInDegrees, Toast.LENGTH_SHORT).show()
+        //locationUtility?.removeLocationUpdates()
     }
 
     override fun drawLinesFromTracker(latLng: LatLng) {
@@ -825,7 +786,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback,
         //store primary key
         utility?.save(Utility.SharedPrefConstants.TRACK_PRIMARYKEY, primarykey)
         utility?.save(Utility.SharedPrefConstants.TRACK_TITLE, trackTitle)
-        fixLocationBtn!!.isSelected = true
+        //fixLocationBtn!!.isSelected = true
         fixLocationHeadingBtn!!.isSelected = true
         controlBtn?.isEnabled = true
         controlBtn?.drawable?.alpha = 225
@@ -1002,6 +963,33 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback,
         supportFragmentManager.beginTransaction()
             .add(sg.onemap.bfatracker.R.id.comment_container, viewCommentFragment, viewCommentFragmentTag).commit()
         commentContainer?.isVisible = true
+    }
+
+    override fun updateHeading(heading: Float) {
+        latestHeading = heading
+
+
+        if(motionDnaController.getCurrentStateForMotionDNA() != motionDnaController.RECORDING_MOTIONDNA
+            && motionDnaController.getCurrentStateForMotionDNA() != motionDnaController.PAUSE_MOTIONDNA) {
+            fixMotionDnaLocationWithHeading()
+        } else {
+            /*if(latestHeading != null && latestHeading!!.toDouble() > 0.0) {
+                motionDnaController.fixMotionDnaLocationWithHeading(latestChosenLocation!!, latestHeading!!)
+            } else {
+                latestHeading = 0.0f
+                Toast.makeText(this, "Latest heading is 0.0", Toast.LENGTH_SHORT).show()
+                motionDnaController.fixMotionDnaLocation(latestChosenLocation!!)
+            }*/
+
+            if(latestHeading != null) {
+                motionDnaController.fixMotionDnaLocationWithHeading(latestChosenLocation!!, latestHeading!!)
+            }
+            val trackId :String? = utility?.sharedPref?.getString(Utility.SharedPrefConstants.TRACK_PRIMARYKEY,"")
+            realmController?.addTrackRecalibrate(trackId, latestChosenLocation!!, latestHeading!!.toDouble())
+        }
+
+        var commentFormFragment : Fragment? = supportFragmentManager.findFragmentByTag(headingFormFragmentTag)
+        supportFragmentManager.beginTransaction().remove(commentFormFragment!!).commit()
     }
 
 

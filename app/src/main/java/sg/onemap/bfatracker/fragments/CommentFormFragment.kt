@@ -74,7 +74,8 @@ class CommentFormFragment(var trackId:String,
             trackAdditional.comment = desc
             trackAdditional.commentLongitude = currentLatLng?.longitude
             trackAdditional.commentLatitude = currentLatLng?.latitude
-            trackAdditional.image = savedPath!!
+            if(savedPath !=null)
+                trackAdditional.image = savedPath!!
 
             mListener.addTrackAdditional(trackAdditional)
         }
