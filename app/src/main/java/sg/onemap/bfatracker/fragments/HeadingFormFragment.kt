@@ -47,7 +47,9 @@ class HeadingFormFragment(var mListener: HeadingFormListener) : DialogFragment()
             */
 
             var headingStr:String = headingText?.text.toString()
-
+            if(headingStr.equals("")) {
+                headingStr = "0.0"
+            }
             mListener.updateHeading(headingStr.toFloat())
 
 //            primaryHeading?.setError("testing")
@@ -56,6 +58,4 @@ class HeadingFormFragment(var mListener: HeadingFormListener) : DialogFragment()
 
         return rootView
     }
-
-
 }

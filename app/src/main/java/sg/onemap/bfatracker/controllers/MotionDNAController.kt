@@ -89,7 +89,7 @@ class MotionDNAController(var activity: MainActivity,
 
     fun stopMotionDna(){
         try {
-            motionDnaApplication!!.stop()
+            //motionDnaApplication!!.stop()
             CURRENT_MOTIONDNA = STOPPED_MOTIONDNA
             //mListener.updateEndTrackRecord(location, 0.0)
             Log.i(TAG, "stopMotionDna")

@@ -16,5 +16,6 @@
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
-
+    <color name="navired">#D5807F</color>
+    <color name="navired_light">#D5807F</color>
 </resources>
